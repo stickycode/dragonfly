@@ -1,0 +1,21 @@
+
+#game {
+  margin: 0 auto;
+  width: 600px;
+  border: 1px solid green;
+  border-radius: 5px;
+}
+
+#page {
+  position: relative;
+}
+
+#jaws-log {
+  width: 200px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 10px;
+}

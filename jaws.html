@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="style.css" />
+		<title>Duel - Alexaviers Games</title>
+	</head>
+	<body>
+		<div id="page">
+			<div id="game">
+				<canvas width="600" height="600"></canvas>
+			</div>
+			<div id="menu-info">
+				Move with arrows, shoot with space. Select with Return.
+			</div>
+			<div id="status-bar">
+			  <div id=player1-health">
+			  </div>
+			</div>
+			<div id="game-info">
+				FPS: <span id="fps"></span>
+				<h1>Game states</h1>
+				Minimalistic example using all jaws convenience methods and game states.
+				Game states are an proven and robust way of separating various parts of the game.
+				For example: An intro, a menu, the actual game play, the high score list. That's 4 different game states right there.
+				<br />
+				<br />
+				A gamestate is just an normal javascript object with the methods setup(), update() and draw().
+				In this example we make 2 Constructors: <code>
+					PlayState()</code>
+				and <code>
+					MenuState()</code>
+				.
+				<br />
+				We switch active game state with: <code>
+					jaws.switchGameState(a_game_state_or_function)</code>
+				</div > <h3>jaws log</h3>
+				<div id="jaws-log"></div>
+			</div>
+			<script type="text/javascript" src="jaws.js"></script>
+			<script type="text/javascript" src="duel.js"></script>
+			<script>
+				/*
+				 *
+				 * PlayState is the actual game play. We switch to it once user choses "Start game"
+				 *
+				 */
+				var fps = document.getElementById("fps")
+
+				/*
+				 *
+				 * MenuState is our lobby/welcome menu were gamer can chose start, high score and settings.
+				 * For this example we have only implemented start. Start switches active game state by simply:
+				 *   jaws.switchGameState(play)   (jaws.switchGameState(PlayState) would have worked too)
+				 *
+				 */
+				function MenuState() {
+					var index = 0
+					var items = ["Start", "Shop", "Highscore"]
+
+					this.setup = function() {
+						index = 0
+						jaws.on_keydown(["down", "s"], function() {
+							index++;
+							if(index >= items.length) {
+								index = items.length - 1
+							}
+						})
+						jaws.on_keydown(["up", "w"], function() {
+							index--;
+							if(index < 0) {
+								index = 0
+							}
+						})
+						jaws.on_keydown(["enter", "space"], function() {
+							if(items[index] == "Start") {
+								jaws.switchGameState(PlayState, {
+									fps : 30,
+									height : 768,
+									width : 1024
+								})
+							}
+							if(items[index] == "Shop") {
+								jaws.switchGameState(ShopState, {
+									fps : 30,
+									height : 768,
+									width : 1024
+								})
+							}
+						})
+					}
+
+					this.draw = function() {
+						jaws.clear()
+						for(var i = 0; items[i]; i++) {
+							// jaws.context.translate(0.5, 0.5)
+							jaws.context.font = "bold 50pt terminal";
+							jaws.context.lineWidth = 10
+							jaws.context.fillStyle = (i == index) ? "Red" : "Black"
+							jaws.context.strokeStyle = "rgba(200,200,200,0.0)"
+							jaws.context.fillText(items[i], 30, 100 + i * 60)
+						}
+					}
+				}
+
+				function ShopState() {
+					var index = 0
+					var items = ["Cannon", "HeatSeeker", "Mine"]
+
+					this.setup = function() {
+						index = 0
+						jaws.on_keydown(["down", "s"], function() {
+							index++;
+							if(index >= items.length) {
+								index = items.length - 1
+							}
+						})
+						jaws.on_keydown(["up", "w"], function() {
+							index--;
+							if(index < 0) {
+								index = 0
+							}
+						})
+						jaws.on_keydown(["enter", "space"], function() {
+							if(items[index] == "Cannon") {
+								jaws.switchGameState(new duel.PlayState({
+									gun : new duel.Cannon(),
+									mineLauncher : new duel.MineLauncher()
+								}), {
+									fps : 30,
+									height : 768,
+									width : 1024
+								})
+							}
+							if(items[index] == "HeatSeeker") {
+								jaws.switchGameState(new duel.PlayState({
+									gun : new duel.MissileLauncher(),
+									mineLauncher : new duel.MineLauncher()
+								}), {
+									fps : 30,
+									height : 768,
+									width : 1024
+								})
+							}
+						})
+					}
+
+					this.draw = function() {
+						jaws.clear()
+						for(var i = 0; items[i]; i++) {
+							// jaws.context.translate(0.5, 0.5)
+							jaws.context.font = "bold 50pt terminal";
+							jaws.context.lineWidth = 10
+							jaws.context.fillStyle = (i == index) ? "Red" : "Black"
+							jaws.context.strokeStyle = "rgba(200,200,200,0.0)"
+							jaws.context.fillText(items[i], 30, 100 + i * 60)
+						}
+					}
+				}
+
+				/*
+				 *
+				 * Our script-entry point
+				 *
+				 */
+				window.onload = function() {
+					duel.load();
+					duel.showMenu();
+				}
+			</script>
+	</body>
+</html>
